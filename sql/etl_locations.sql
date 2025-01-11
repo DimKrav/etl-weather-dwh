@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS etl.etl_locations (
     latitude NUMERIC NOT NULL,            
     longitude NUMERIC NOT NULL,       
     active BOOLEAN DEFAULT TRUE,          
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_city_country UNIQUE (city_name, country) -- Unique constraint
 );
 
 -- Insert initial data for locations
@@ -19,7 +20,8 @@ INSERT INTO etl.etl_locations (city_name, country, latitude, longitude) VALUES
     ('Tokyo', 'Japan', 35.6895, 139.6917),
     ('Buenos Aires', 'Argentina', -34.6037, -58.3816),
     ('Cape Town', 'South Africa', -33.9249, 18.4241) 
-    ON CONFLICT DO NOTHING;
+ON CONFLICT (city_name, country) DO NOTHING;
+
 
 -- Grant privileges
 GRANT ALL PRIVILEGES ON TABLE etl.etl_locations TO public;

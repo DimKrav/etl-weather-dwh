@@ -1,6 +1,20 @@
+# Ignore environment variables
 .env
 
-TODO
+# Ignore IDE configuration files
+.idea/
 
+# Ignore task tracking file
+TODO.md
+
+# Ignore virtual environment directory
 venv/
+
+# Ignore Jupyter Notebook files using for development and testing
+notebooks/
+
+# Ignore PostgreSQL data directory
 postgres_data/
+
+# Ignore temporary files folder 
+data/
