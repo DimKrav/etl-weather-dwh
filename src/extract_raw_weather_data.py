@@ -71,7 +71,7 @@ def save_to_raw_table(conn, data):
         conn.commit()
 
 
-def main():
+def extract_data():
     """Main function to fetch weather and air pollution data and store it in raw_weather_data."""
     try:
         # Connect to the database
@@ -116,4 +116,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    extract_data()

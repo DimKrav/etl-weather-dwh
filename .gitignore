@@ -1,20 +1,32 @@
-# Ignore environment variables
+# DotEnv configuration
 .env
 
-# Ignore IDE configuration files
-.idea/
-
-# Ignore task tracking file
+# Personal task tracking file
 TODO.md
 
-# Ignore virtual environment directory
+# Virtual environment directory
 venv/
 
-# Ignore Jupyter Notebook files using for development and testing
+# Jupyter Notebook files using for development and testing
 notebooks/
 
-# Ignore PostgreSQL data directory
+# PostgreSQL data directory
 postgres_data/
 
-# Ignore temporary files folder 
+# exclude data from source control by default
 data/
+
+# Pycharm
+.idea
+
+# VS Code
+.vscode/
+
+# Jupyter NB Checkpoints
+.ipynb_checkpoints/
+
+# Mac OS-specific storage files
+.DS_Store
+
+# secrets
+*.secret

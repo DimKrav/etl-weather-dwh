@@ -15,11 +15,25 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Load PostgreSQL credentials from environment variables
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "weather-dwh-db")
-POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+POSTGRES_CONFIG = {
+    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "port": os.getenv("POSTGRES_PORT", "5432"),
+    "dbname": os.getenv("POSTGRES_DB", "weather-dwh-db"),
+    "user": os.getenv("POSTGRES_USER", "postgres"),
+    "password": os.getenv("POSTGRES_PASSWORD", "postgres"),
+}
+
+def get_database_connection():
+    """
+    Establishes a new database connection using the configuration in POSTGRES_CONFIG.
+    """
+    try:
+        conn = psycopg2.connect(**POSTGRES_CONFIG)
+        conn.autocommit = False
+        return conn
+    except Exception as e:
+        logger.error(f"Error establishing database connection: {e}")
+        raise
 
 
 def fetch_unprocessed_records(conn):
@@ -44,6 +58,7 @@ def transform_weather(record):
         return (
             int(city_id),
             city_name,
+            convert_unix_to_datetime(weather_data.get('dt')),
             int(weather_data['weather'][0]['id']),
             weather_data['weather'][0]['main'],
             weather_data['weather'][0]['description'],
@@ -54,8 +69,7 @@ def transform_weather(record):
             int(weather_data['main']['humidity']),
             int(weather_data['visibility']),
             float(weather_data['wind']['speed']),
-            int(weather_data['wind']['deg']),
-            convert_unix_to_datetime(weather_data.get('dt'))
+            int(weather_data['wind']['deg'])
         )
     except KeyError as e:
         logger.error(f"Missing key in weather data: {e}")
@@ -73,6 +87,7 @@ def transform_pollution(record):
         return (
             int(city_id),
             city_name,
+            convert_unix_to_datetime(air_quality_data['list'][0]['dt']),
             int(air_quality_data['list'][0]['main']['aqi']),
             float(components['co']),
             float(components['no']),
@@ -81,8 +96,7 @@ def transform_pollution(record):
             float(components['so2']),
             float(components['pm2_5']),
             float(components['pm10']),
-            float(components['nh3']),
-            convert_unix_to_datetime(air_quality_data['list'][0]['dt'])
+            float(components['nh3'])
         )
     except KeyError as e:
         logger.error(f"Missing key in air quality data: {e}")
@@ -92,16 +106,16 @@ def transform_pollution(record):
 def insert_weather_staging(conn, weather_staging_data):
     """Save weather data to the staging.staging_weather table"""
     with conn.cursor() as cursor:
-        insert_query = """INSERT INTO staging.staging_weather (city_id, city_name, weather_id, weather_main, 
+        insert_query = """INSERT INTO staging.staging_weather (city_id, city_name, datetime_utc, weather_id, weather_main, 
         weather_description, weather_icon, temperature, feels_like, pressure, humidity, visibility, wind_speed, 
-        wind_deg, observation_datetime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+        wind_deg) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
         cursor.executemany(insert_query, weather_staging_data)
 
 
 def insert_air_quality_staging(conn, pollution_staging_data):
     with conn.cursor() as cursor:
-        insert_query = """INSERT INTO staging.staging_air_quality (city_id, city_name, aqi, co, no, no2, o3, so2, 
-        pm2_5, pm10, nh3, observation_datetime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+        insert_query = """INSERT INTO staging.staging_air_quality (city_id, city_name, datetime_utc, aqi, co, no, no2, o3, so2, 
+        pm2_5, pm10, nh3) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
         cursor.executemany(insert_query, pollution_staging_data)
 
 
@@ -122,16 +136,7 @@ def transform_raw_to_staging():
     Main function to transform data from raw to staging.
     """
     try:
-        # Connect to the database
-        conn = psycopg2.connect(
-            host=POSTGRES_HOST,
-            port=POSTGRES_PORT,
-            dbname=POSTGRES_DB,
-            user=POSTGRES_USER,
-            password=POSTGRES_PASSWORD
-        )
-
-        conn.autocommit = False
+        conn = get_database_connection()
 
         # Step 1: Fetch raw records to process
         raw_records_to_process = fetch_unprocessed_records(conn)

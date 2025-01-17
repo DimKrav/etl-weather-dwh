@@ -43,7 +43,7 @@ This project is an ETL pipeline designed for collecting, storing and analyzing w
    make setup_database
    ```
 
-7. Run the extraction module:
+7. Run the ETL pipeline:
    ```bash
-   make extract_data
-   
+   make run_etl
+   ```
