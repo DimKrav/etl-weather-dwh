@@ -4,6 +4,9 @@
 # Personal task tracking file
 TODO.md
 
+# Test files
+test*
+
 # Virtual environment directory
 venv/
 
@@ -13,8 +16,17 @@ notebooks/
 # PostgreSQL data directory
 postgres_data/
 
-# exclude data from source control by default
+# Airflow data directory
+airflow_data/
+
+# Services directory
+services/
+
+# Data directory
 data/
+
+#Airflow logs
+logs/
 
 # Pycharm
 .idea
@@ -24,6 +36,9 @@ data/
 
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/
+
+# Python cache
+__pycache__/
 
 # Mac OS-specific storage files
 .DS_Store

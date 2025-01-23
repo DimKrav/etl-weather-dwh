@@ -14,7 +14,7 @@ load_dotenv()
 
 # Load PostgreSQL credentials from environment variables
 POSTGRES_CONFIG = {
-    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "host": os.getenv("POSTGRES_HOST", "weather-dwh-postgres"),
     "port": os.getenv("POSTGRES_PORT", "5432"),
     "dbname": os.getenv("POSTGRES_DB", "weather-dwh-db"),
     "user": os.getenv("POSTGRES_USER", "postgres"),

@@ -25,7 +25,7 @@ API_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"
 API_AIR_POLLUTION_URL = "http://api.openweathermap.org/data/2.5/air_pollution"
 
 # PostgreSQL credentials
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "weather-dwh-postgres")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "weather-dwh-db")
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
@@ -116,4 +116,5 @@ def extract_data():
 
 
 if __name__ == "__main__":
+    print(POSTGRES_HOST)
     extract_data()
